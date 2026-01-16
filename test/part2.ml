@@ -14,10 +14,10 @@ let test_lookup =
     (Utils.uncurry (lookup Int.equal))
 
 (** A list of (input, output) pairs *)
-let compress_tests = [ ([ "a"; "a" ], [ "a" ]) (* add your tests here *) ]
+let compress_tests = [ ([ "a"; "a" ], [ "a" ]); ([ "a"; "b"; "b"; "b"; "b"; "a"; "b"; "a" ], [ "a"; "b"; "a"; "b"; "a" ]) ]
 
 (** A list of (input, output) pairs *)
-let max_tests = [ ([ 1; 2 ], Some 2) (* add your tests here *) ]
+let max_tests = [ ([ 1; 2 ], Some 2); ([ 1; 3; 4; 5; 6 ], Some 6); ([], None) ] 
 
 (** A list of (input, output) pairs *)
 let join_tests =
