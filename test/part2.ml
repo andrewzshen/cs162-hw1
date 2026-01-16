@@ -21,7 +21,7 @@ let max_tests = [ ([ 1; 2 ], Some 2); ([ 1; 3; 4; 5; 6 ], Some 6); ([], None) ]
 
 (** A list of (input, output) pairs *)
 let join_tests =
-  [ ([ Some 1; Some 2 ], Some [ 1; 2 ]) (* add your tests here *) ]
+    [ ([ Some 1; Some 2 ], Some [ 1; 2 ]); ([Some 1; None; Some 2], None) ]
 
 (** A list of ((input key * input dict) * output) pairs *)
 let lookup_tests = [ ((1, [ (1, "hi") ]), Some "hi") (* add your tests here *) ]

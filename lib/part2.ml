@@ -19,11 +19,19 @@ let max (xs : int list) : int option =
 
 let rec join (xs : 'a option list) : 'a list option = 
     match xs with 
-    | [] 
+    | [] -> Some []
+    | None::_ -> None 
+    | Some h::t -> 
+        (match join t with 
+        | None -> None 
+        | Some ys -> Some (h::ys) )
 
-let insert (key : 'k) (value : 'v) (dict : ('k * 'v) list) : ('k * 'v) list =
-  (key, value) :: dict
+let insert (key : 'k) (value : 'v) (dict : ('k * 'v) list) : ('k * 'v) list = (key, value) :: dict
 
-let rec lookup (equal : 'k -> 'k -> bool) (key : 'k) (dict : ('k * 'v) list) :
-    'v option =
-  todo ()
+let rec lookup (equal : 'k -> 'k -> bool) (key : 'k) (dict : ('k * 'v) list) : 'v option =
+    match dict with
+    | [] -> None
+    | (k, v)::t -> 
+        if equal k key 
+        then Some v 
+        else lookup equal k t
