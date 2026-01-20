@@ -13,9 +13,12 @@ let rec equal_tree (equal : 'a -> 'a -> bool) (t1 : 'a tree) (t2 : 'a tree) : bo
     | _, _ -> false
  
 let timestamp (t : 'a tree) : (int * 'a) tree =
-    let rec helper (next : int) (t : 'a tree) : ((int * 'a) tree * int) = 
+    let rec helper (time : int) (t : 'a tree) : ((int * 'a) tree * int) = 
         match t with
-        | Leaf -> (Leaf, next)
+        | Leaf -> (Leaf, time)
         | Node (v, l, r) -> 
+            let (l', time' ) = helper (time + 1) l in
+            let (r', time'') = helper time' r in
+            ( Node ((time, v), l', r'), time'')
     in
-
+    fst (helper 0 t)

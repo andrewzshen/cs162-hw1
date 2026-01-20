@@ -40,7 +40,12 @@ let test_timestamp =
 
 (** A list of ((input tree * input tree) * expected output) tests *)
 let equal_tree_tests =
-  [ (DSL.(node 1 leaf leaf, node 1 leaf leaf), true) (* add your tests here *) ]
+    [ 
+        (DSL.(node 1 leaf leaf, node 1 leaf leaf), true);
+        (DSL.(node 1 leaf leaf, node 2 leaf leaf), false);
+        (DSL.(node 1 leaf (term 1), node 2 leaf leaf), false);
+        (DSL.(node 1 leaf (term 1), node 1 leaf (term 1)), true);
+    ]
 
 (** A list of (input tree * output tree) tests *)
 let timestamp_tests =

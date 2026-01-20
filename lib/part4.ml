@@ -20,11 +20,52 @@ let rec pp_expr ppf =
 
 (* Convert an expression into a pretty string *)
 let show_expr (e : expr) : string = Fmt.to_to_string pp_expr e
-let rec eval_expr (x : int) (e : expr) : int = todo ()
-let rec simplify (e : expr) : expr = todo ()
+
+let rec eval_expr (x : int) (e : expr) : int = 
+    match e with
+    | Const n -> n
+    | X -> x
+    | Add (e1, e2) -> (eval_expr x e1) + (eval_expr x e2)   
+    | Mul (e1, e2) -> (eval_expr x e1) * (eval_expr x e2)
+    | Compose (e1, e2) -> eval_expr (eval_expr x e1) e2
+
+let rec simplify (e : expr) : expr = 
+    match e with
+    | Const _ -> e
+    | X -> e
+    | Add (e1, e2) ->
+        let e1' = simplify e1 in
+        let e2' = simplify e2 in
+        (match e1', e2' with
+        | _, Const 0 -> e1'
+        | Const 0, _ -> e2'
+        | Const x, Const y -> Const (x + y)
+        | _, _ -> Add (e1', e2') )
+    | Mul (e1, e2) ->
+        let e1' = simplify e1 in
+        let e2' = simplify e2 in
+        (match e1', e2' with
+        | _, Const 1 -> e1'
+        | Const 1, _ -> e2'
+        | Const x, Const y -> Const (x * y)
+        | _, _ -> Mul (e1', e2') )
+    | Compose (e1, e2) ->
+        let rec substitute (replace : expr) (e : expr) : expr = 
+            match e with
+            | Const n -> Const n
+            | X -> replace
+            | Add (e1, e2) -> Add (substitute replace e1, substitute replace e2) 
+            | Mul (e1, e2) -> Mul (substitute replace e1, substitute replace e2) 
+            | Compose (e1, e2) -> substitute replace (substitute e1 e2) 
+        in
+        simplify (substitute e1 e2)
 
 type poly = int list [@@deriving show]
 
-let rec eval_poly (x : int) (p : poly) : int = bonus ()
+let rec eval_poly (x : int) (p : poly) : int =
+    match p with
+    | [] -> x
+    | h::t -> eval_poly (x * h) t
+
 let rec normalize (e : expr) : poly = bonus ()
 let semantic_equiv (e1 : expr) (e2 : expr) : bool = bonus ()
