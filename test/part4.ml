@@ -49,7 +49,7 @@ let eval_expr_tests =
 let simplify_tests =
   [ DSL.(add x (add x (mul (const 1) (add (const 0) x))), add x (add x x)) ]
 
-let eval_poly_tests = [ ((3, [ 6; 7; 3 ]), 54) ]
+let eval_poly_tests = [ ((3, [ 6; 7; 3 ]), 54); ((3, [ -19; 7; -4; 6 ]), 128) ]
 
 let normalize_tests =
   [

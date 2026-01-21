@@ -62,10 +62,29 @@ let rec simplify (e : expr) : expr =
 
 type poly = int list [@@deriving show]
 
-let rec eval_poly (x : int) (p : poly) : int =
+let rec eval_poly (x : int) (p : poly) : int = 
+    (* Using Horner's Method: https://en.wikipedia.org/wiki/Horner%27s_method *)
     match p with
-    | [] -> x
-    | h::t -> eval_poly (x * h) t
+    | [] -> 0
+    | h::t -> h + x * eval_poly x t 
 
-let rec normalize (e : expr) : poly = bonus ()
+let rec normalize (e : expr) : poly =
+    let e' = simplify e in 
+    match e' with
+    | Const n -> [n]
+    | X -> [0; 1]
+    | Add (e1, e2) ->
+        let rec add_poly (p1 : poly) (p2: poly) : poly = 
+            match p1, p2 with
+            | [], p -> p
+            | p, [] -> p
+            | c1::r1, c2::r2 -> (c1 + c2)::(add_poly r1 r2)
+        in
+        add_poly (normalize e1) (normalize e2)
+    | Mul (e1, e2) ->
+        let rec mul_poly (p1 : poly) (p2 : poly) : poly = todo()
+        in
+        mul_poly (normalize e1) (normalize e2)
+    | Compose (e1, e2) -> []
+
 let semantic_equiv (e1 : expr) (e2 : expr) : bool = bonus ()
