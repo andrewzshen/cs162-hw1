@@ -31,7 +31,7 @@ let insert (key : 'k) (value : 'v) (dict : ('k * 'v) list) : ('k * 'v) list = (k
 let rec lookup (equal : 'k -> 'k -> bool) (key : 'k) (dict : ('k * 'v) list) : 'v option =
     match dict with
     | [] -> None
-    | (k, v)::t -> 
-        if equal k key 
-        then Some v 
-        else lookup equal k t
+    | (key', value)::t -> 
+        if equal key' key 
+        then Some value 
+        else lookup equal key' t
