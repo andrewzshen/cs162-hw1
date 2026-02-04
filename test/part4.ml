@@ -47,7 +47,13 @@ let eval_expr_tests =
   [ ((3, DSL.(comp (add (const 1) (mul (const 2) x)) (add x (const 5)))), 12) ]
 
 let simplify_tests =
-  [ DSL.(add x (add x (mul (const 1) (add (const 0) x))), add x (add x x)) ]
+  [ 
+    DSL.(add x (add x (mul (const 1) (add (const 0) x))), add x (add x x));
+    DSL.(comp x (add x (const 0)), x);
+    DSL.(add (mul (const 1) (add (const 0) (mul (const 1) x))) (const 0), x);
+    DSL.(mul (add (const 0) (const 1)) (add x (const 0)), x);
+    DSL.(mul x (const 0), const 0);
+]
 
 let eval_poly_tests = [ ((3, [ 6; 7; 3 ]), 54); ((3, [ -19; 7; -4; 6 ]), 128) ]
 
@@ -56,7 +62,10 @@ let normalize_tests =
     ( DSL.(
         add (const 4) (mul (add x (const 2)) (add (mul (const 3) x) (const 1)))),
       [ 6; 7; 3 ] );
-  ]
+    ( DSL.( 
+        comp (add x (const 1)) (mul (const 2) x)),
+      [ 2; 2 ] );
+]
 
 let semantic_equiv_tests =
   [

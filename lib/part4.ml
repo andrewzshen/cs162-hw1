@@ -45,6 +45,8 @@ let rec simplify (e : expr) : expr =
         let e1' = simplify e1 in
         let e2' = simplify e2 in
         (match e1', e2' with
+        | _, Const 0 -> Const 0
+        | Const 0, _ -> Const 0
         | _, Const 1 -> e1'
         | Const 1, _ -> e2'
         | Const x, Const y -> Const (x * y)
@@ -68,23 +70,44 @@ let rec eval_poly (x : int) (p : poly) : int =
     | [] -> 0
     | h::t -> h + x * eval_poly x t 
 
+let rec poly_add (p1 : poly) (p2: poly) : poly = 
+    match p1, p2 with
+    | [], p -> p
+    | p, [] -> p
+    | c1::r1, c2::r2 -> (c1 + c2)::(poly_add r1 r2)
+
+let rec poly_mul (p1 : poly) (p2 : poly) : poly =
+    match p1 with
+    | [] -> []
+    | h::t -> 
+        let rec scale (k : int) (p : poly) : poly =
+            match p with
+            | [] -> []
+            | coef::rest -> (k * coef)::(scale k rest) 
+        in
+        poly_add (scale h p2) (0::(poly_mul t p2)) 
+
 let rec normalize (e : expr) : poly =
     let e' = simplify e in 
     match e' with
     | Const n -> [n]
     | X -> [0; 1]
     | Add (e1, e2) ->
-        let rec add_poly (p1 : poly) (p2: poly) : poly = 
-            match p1, p2 with
-            | [], p -> p
-            | p, [] -> p
-            | c1::r1, c2::r2 -> (c1 + c2)::(add_poly r1 r2)
-        in
-        add_poly (normalize e1) (normalize e2)
+        poly_add (normalize e1) (normalize e2)
     | Mul (e1, e2) ->
-        let rec mul_poly (p1 : poly) (p2 : poly) : poly = todo()
-        in
-        mul_poly (normalize e1) (normalize e2)
-    | Compose (e1, e2) -> []
+        poly_mul (normalize e1) (normalize e2)
+    | Compose (_, _) -> [] (* You should not be here *)
 
-let semantic_equiv (e1 : expr) (e2 : expr) : bool = bonus ()
+let semantic_equiv (e1 : expr) (e2 : expr) : bool =
+    let rec poly_equal (p1 : poly) (p2 : poly) : bool =
+        match p1, p2 with
+        | [], [] -> true
+        | c1::r1, c2::r2 ->
+            if c1 = c2
+            then poly_equal r1 r2
+            else false
+        | _, _ -> false
+    in
+    let p1 = normalize e1 in
+    let p2 = normalize e2 in
+    poly_equal p1 p2    
